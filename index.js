@@ -44,33 +44,54 @@ var mvc = {
       controllers = _objectSpread({}, controllers);
     }
 
-    var controllerMethodEl = document.querySelector('input[data-js-mvc-routing="js-mvc-route"]');
-
-    if (!controllerMethodEl || !controllerMethodEl.value || controllerMethodEl.value.indexOf('::') === -1) {
-      throw new Error('Invalid Controller::method');
-    }
-
-    var _controllerMethodEl$v = controllerMethodEl.value.split('::'),
-        _controllerMethodEl$v2 = _slicedToArray(_controllerMethodEl$v, 2),
-        fullClass = _controllerMethodEl$v2[0],
-        method = _controllerMethodEl$v2[1];
-
-    var _fullClass$split$slic = fullClass.split('\\').slice(-1),
-        _fullClass$split$slic2 = _slicedToArray(_fullClass$split$slic, 1),
-        className = _fullClass$split$slic2[0];
+    var _getClassNameAndMetho = getClassNameAndMethod(),
+        _getClassNameAndMetho2 = _slicedToArray(_getClassNameAndMetho, 2),
+        className = _getClassNameAndMetho2[0],
+        method = _getClassNameAndMetho2[1];
 
     if (controllers[className]) {
       var controller = new controllers[className]();
 
-      if (controller[method]) {
-        var metadata = {};
-        controller[method](getElements(metadata), getData(metadata), metadata);
-      }
+      _run(controller, method);
     }
+  },
+  run: function run(controller) {
+    var _getClassNameAndMetho3 = getClassNameAndMethod(),
+        _getClassNameAndMetho4 = _slicedToArray(_getClassNameAndMetho3, 2),
+        _ = _getClassNameAndMetho4[0],
+        method = _getClassNameAndMetho4[1];
+
+    _run(controller, method);
   }
 };
 var _default = mvc;
 exports["default"] = _default;
+
+function _run(controller, method) {
+  if (controller[method]) {
+    var metadata = {};
+    controller[method](getElements(metadata), getData(metadata), metadata);
+  }
+}
+
+function getClassNameAndMethod() {
+  var controllerMethodEl = document.querySelector('input[data-js-mvc-routing="js-mvc-route"]');
+
+  if (!controllerMethodEl || !controllerMethodEl.value || controllerMethodEl.value.indexOf('::') === -1) {
+    throw new Error('Invalid Controller::method');
+  }
+
+  var _controllerMethodEl$v = controllerMethodEl.value.split('::'),
+      _controllerMethodEl$v2 = _slicedToArray(_controllerMethodEl$v, 2),
+      fullClass = _controllerMethodEl$v2[0],
+      method = _controllerMethodEl$v2[1];
+
+  var _fullClass$split$slic = fullClass.split('\\').slice(-1),
+      _fullClass$split$slic2 = _slicedToArray(_fullClass$split$slic, 1),
+      className = _fullClass$split$slic2[0];
+
+  return [className, method];
+}
 
 function getElements() {
   var metadata = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
