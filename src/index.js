@@ -15,23 +15,39 @@ const mvc = {
             controllers = {...controllers};
         }
 
-        let controllerMethodEl = document.querySelector('input[data-js-mvc-routing="js-mvc-route"]');
-        if (!controllerMethodEl || !controllerMethodEl.value || controllerMethodEl.value.indexOf('::') === -1) {
-            throw new Error('Invalid Controller::method');
-        }
-        let [fullClass, method] = controllerMethodEl.value.split('::');
-        let [className] = fullClass.split('\\').slice(-1);
+       let [className, method] = getClassNameAndMethod()
 
         if (controllers[className]) {
             let controller = new controllers[className]();
-            if (controller[method]) {
-                let metadata = {};
-                controller[method](getElements(metadata), getData(metadata), metadata);
-            }
+            run(controller, method);
         }
-    }
+    },
+	run(controller) {
+		let [_, method] = getClassNameAndMethod();
+		run(controller, method);
+	}
 };
 export default mvc;
+
+function run(controller, method)
+{
+	if (controller[method]) {
+		let metadata = {};
+		controller[method](getElements(metadata), getData(metadata), metadata);
+	}
+}
+
+function getClassNameAndMethod()
+{
+	let controllerMethodEl = document.querySelector('input[data-js-mvc-routing="js-mvc-route"]');
+	if (!controllerMethodEl || !controllerMethodEl.value || controllerMethodEl.value.indexOf('::') === -1) {
+		throw new Error('Invalid Controller::method');
+	}
+	let [fullClass, method] = controllerMethodEl.value.split('::');
+	let [className] = fullClass.split('\\').slice(-1);
+	return [className, method];
+}
+
 
 function getElements(metadata = {}) {
     let elements = {};
